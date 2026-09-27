@@ -1,0 +1,3 @@
+entity_code,case_external_id,escalated_at,escalated_to,level,reason,acknowledged_at
+BANK-X,BANK-X-CASE-00065,2026-08-18 13:24:54,IR-Team,1,Critical severity alert requiring senior review,2026-08-18 13:40:54
+BANK-X,BANK-X-CASE-00071,2026-09-06 12:56:45,CISO-Office,1,Critical severity alert requiring senior review,2026-09-06 13:56:45

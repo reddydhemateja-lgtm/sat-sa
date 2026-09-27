@@ -1,0 +1,10 @@
+code,name,sector,sub_sector,region,criticality,peer_group
+BANK-A,National Banking Entity A,Banking,Retail Banking,North,HIGH,Banking-Large
+BANK-X,Commercial Bank X,Banking,Retail,East,HIGH,Banking-Large
+BANK-Y,Cooperative Bank Y,Banking,Retail,South,HIGH,Banking-Large
+POWER-B,Regional Power Grid Operator B,Power,Transmission,West,CRITICAL,Power-Transmission
+GRID-M,Metro Grid Operator M,Power,Distribution,North,CRITICAL,Power-Transmission
+GRID-N,Northern Grid Operator N,Power,Transmission,North,CRITICAL,Power-Transmission
+TELEC-C,Telecom Service Provider C,Telecom,Mobile Network,South,HIGH,Telecom-National
+TELEC-P,Telecom Provider P,Telecom,Fixed Line,West,HIGH,Telecom-National
+TELEC-Q,Telecom Provider Q,Telecom,Mobile,East,HIGH,Telecom-National

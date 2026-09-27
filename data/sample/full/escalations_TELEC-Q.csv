@@ -1,0 +1,5 @@
+entity_code,case_external_id,escalated_at,escalated_to,level,reason,acknowledged_at
+TELEC-Q,TELEC-Q-CASE-00376,2026-08-18 20:51:03,IR-Team,2,Critical severity alert requiring senior review,2026-08-18 21:46:03
+TELEC-Q,TELEC-Q-CASE-00380,2026-08-07 09:11:45,IR-Team,2,Critical severity alert requiring senior review,2026-08-07 09:25:45
+TELEC-Q,TELEC-Q-CASE-00398,2026-09-02 13:24:11,CISO-Office,1,Critical severity alert requiring senior review,2026-09-02 14:21:11
+TELEC-Q,TELEC-Q-CASE-00419,2026-08-30 10:40:47,IR-Team,1,Critical severity alert requiring senior review,2026-08-30 11:34:47

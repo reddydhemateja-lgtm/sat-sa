@@ -1,0 +1,9 @@
+entity_code,case_external_id,escalated_at,escalated_to,level,reason,acknowledged_at
+BANK-A,BANK-A-CASE-00007,2026-09-16 04:14:55,IR-Team,1,Critical severity alert requiring senior review,2026-09-16 05:00:55
+BANK-A,BANK-A-CASE-00008,2026-07-01 22:35:40,SOC-Lead,2,Critical severity alert requiring senior review,2026-07-01 23:00:40
+BANK-A,BANK-A-CASE-00012,2026-09-04 13:11:47,SOC-Lead,1,Critical severity alert requiring senior review,2026-09-04 13:58:47
+BANK-A,BANK-A-CASE-00024,2026-08-30 00:56:06,IR-Team,1,Critical severity alert requiring senior review,2026-08-30 01:52:06
+BANK-A,BANK-A-CASE-00032,2026-09-25 18:16:52,SOC-Lead,1,Critical severity alert requiring senior review,2026-09-25 19:14:52
+BANK-A,BANK-A-CASE-00033,2026-08-09 03:42:04,IR-Team,1,Critical severity alert requiring senior review,2026-08-09 04:35:04
+BANK-A,BANK-A-CASE-00054,2026-07-22 08:00:00,CISO-Office,1,Critical severity alert requiring senior review,2026-07-22 08:05:00
+BANK-A,BANK-A-CASE-00057,2026-07-18 12:55:24,IR-Team,1,Critical severity alert requiring senior review,2026-07-18 13:02:24

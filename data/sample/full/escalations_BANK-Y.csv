@@ -1,0 +1,5 @@
+entity_code,case_external_id,escalated_at,escalated_to,level,reason,acknowledged_at
+BANK-Y,BANK-Y-CASE-00101,2026-08-07 19:54:33,CISO-Office,1,Critical severity alert requiring senior review,2026-08-07 20:09:33
+BANK-Y,BANK-Y-CASE-00140,2026-07-27 16:20:54,CISO-Office,1,Critical severity alert requiring senior review,2026-07-27 16:51:54
+BANK-Y,BANK-Y-CASE-00153,2026-07-05 06:21:48,SOC-Lead,2,Critical severity alert requiring senior review,2026-07-05 06:56:48
+BANK-Y,BANK-Y-CASE-00158,2026-08-28 12:07:16,IR-Team,1,Critical severity alert requiring senior review,2026-08-28 12:54:16

@@ -1,0 +1,8 @@
+entity_code,case_external_id,escalated_at,escalated_to,level,reason,acknowledged_at
+GRID-N,GRID-N-CASE-00261,2026-08-28 01:21:42,IR-Team,2,Critical severity alert requiring senior review,2026-08-28 02:04:42
+GRID-N,GRID-N-CASE-00274,2026-07-28 20:03:10,IR-Team,2,Critical severity alert requiring senior review,2026-07-28 20:11:10
+GRID-N,GRID-N-CASE-00280,2026-07-18 06:09:04,IR-Team,2,Critical severity alert requiring senior review,2026-07-18 06:44:04
+GRID-N,GRID-N-CASE-00287,2026-07-19 01:32:39,SOC-Lead,1,Critical severity alert requiring senior review,2026-07-19 02:19:39
+GRID-N,GRID-N-CASE-00291,2026-08-04 17:28:06,SOC-Lead,1,Critical severity alert requiring senior review,2026-08-04 18:20:06
+GRID-N,GRID-N-CASE-00293,2026-09-29 21:12:08,CISO-Office,2,Critical severity alert requiring senior review,2026-09-29 21:19:08
+GRID-N,GRID-N-CASE-00298,2026-07-12 05:44:56,IR-Team,2,Critical severity alert requiring senior review,2026-07-12 06:01:56
