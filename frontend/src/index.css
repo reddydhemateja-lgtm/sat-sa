@@ -1,0 +1,100 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  @apply bg-slate-50 text-slate-900 antialiased;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+}
+
+html.dark body {
+  @apply bg-navy-950 text-slate-100;
+}
+
+/* ---------- Scrollbar (subtle, professional) ---------- */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(148 163 184 / 0.4);
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(100 116 139 / 0.6);
+  background-clip: padding-box;
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+  background: rgb(71 85 105 / 0.6);
+  background-clip: padding-box;
+}
+
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgb(100 116 139 / 0.8);
+  background-clip: padding-box;
+}
+
+/* ---------- Focus ring ---------- */
+:focus-visible {
+  outline: 2px solid theme('colors.accent.DEFAULT');
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ---------- Utility: subtle card boundary in dark mode ---------- */
+@layer components {
+  .card-base {
+    @apply rounded-md border border-slate-200 bg-white shadow-card dark:border-navy-800 dark:bg-navy-900;
+  }
+
+  .panel-base {
+    @apply rounded-md border border-slate-200 bg-white shadow-panel dark:border-navy-800 dark:bg-navy-900;
+  }
+
+  .input-base {
+    @apply w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 transition
+           focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20
+           disabled:cursor-not-allowed disabled:bg-slate-100
+           dark:border-navy-700 dark:bg-navy-950 dark:text-slate-100 dark:placeholder-slate-500
+           dark:focus:border-accent-soft dark:focus:ring-accent-soft/20;
+  }
+
+  .label-base {
+    @apply mb-1.5 block text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400;
+  }
+
+  .section-heading {
+    @apply text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400;
+  }
+
+  .page-heading {
+    @apply text-2xl font-semibold tracking-tight text-slate-900 dark:text-white;
+  }
+
+  .page-subheading {
+    @apply mt-1 text-sm text-slate-500 dark:text-slate-400;
+  }
+}

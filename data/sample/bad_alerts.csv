@@ -1,0 +1,5 @@
+entity_code,external_id,title,severity,category,detected_at,status
+BANK-A,BAD-001,Test alert,CRITICAL,MALWARE,2026-07-01 10:00:00,OPEN
+BANK-A,BAD-002,Bad severity,SUPER-CRITICAL,MALWARE,2026-07-01 10:00:00,OPEN
+BANK-A,,Missing id,MALWARE,PHISHING,2026-07-01 10:00:00,OPEN
+BANK-A,BAD-004,Bad date,MALWARE,PHISHING,not-a-date,OPEN

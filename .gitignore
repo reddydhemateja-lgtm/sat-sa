@@ -1,0 +1,35 @@
+# Python
+backend/.venv/
+backend/sat_sa.db
+backend/login.json
+backend/report.pdf
+backend/spec.json
+backend/__pycache__/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.pytest_cache/
+
+# Environment
+backend/.env
+
+# Node
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/node_modules/.vite/
+frontend/tsconfig.tsbuildinfo
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Reports (generated)
+reports/*.pdf
+reports/*.csv
+reports/*.xlsx

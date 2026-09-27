@@ -1,0 +1,4 @@
+entity_code,case_external_id,escalated_at,escalated_to,level,reason,acknowledged_at
+POWER-B,POWER-B-CASE-00064,2026-09-09 21:34:01,CISO-Office,1,Critical severity alert requiring senior review,2026-09-09 21:49:01
+POWER-B,POWER-B-CASE-00083,2026-07-09 10:58:28,CISO-Office,1,Critical severity alert requiring senior review,2026-07-09 11:12:28
+POWER-B,POWER-B-CASE-00090,2026-08-02 07:08:24,IR-Team,1,Critical severity alert requiring senior review,2026-08-02 08:03:24
