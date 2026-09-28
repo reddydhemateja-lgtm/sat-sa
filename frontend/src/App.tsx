@@ -1,8 +1,8 @@
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 
 import AppShell from './components/layout/AppShell';
 import ProtectedRoute from './components/auth/ProtectedRoute';
-import IntroPage from './pages/LandingPage';
+import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import EntitiesPage from './pages/EntitiesPage';
@@ -20,37 +20,13 @@ import SettingsPage from './pages/SettingsPage';
 import IngestionPage from './pages/IngestionPage';
 import NotFoundPage from './pages/NotFoundPage';
 
-import { getToken } from './services/api';
-
-function introSeen(): boolean {
-  try {
-    return sessionStorage.getItem('sat-sa-intro-seen') === '1';
-  } catch {
-    return false;
-  }
-}
-
 export default function App() {
-  const hasToken = Boolean(getToken());
-  const seenIntro = introSeen();
-
   return (
     <Routes>
-      {/* Landing page — shown first, once per session */}
-      <Route
-        path="/"
-        element={
-          seenIntro && hasToken ? (
-            <Navigate to="/dashboard" replace />
-          ) : seenIntro ? (
-            <Navigate to="/login" replace />
-          ) : (
-            <IntroPage />
-          )
-        }
-      />
+      {/* Public landing page — first thing a visitor sees */}
+      <Route path="/" element={<LandingPage />} />
 
-      {/* Auto-login page (no form) */}
+      {/* Auto-login (no credentials typed; used internally after Enter Platform) */}
       <Route path="/login" element={<LoginPage />} />
 
       {/* Authenticated workspace */}
