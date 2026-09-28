@@ -14,8 +14,14 @@ export function useCurrentUser() {
     queryKey: ME_KEY,
     queryFn: authService.fetchCurrentUser,
     enabled: hasToken,
-    retry: false,
-    refetchOnMount: false,
+    // Retry on network failures (cold starts) but not on 401 (real auth failure)
+    retry: (failureCount, error) => {
+      const status = (error as { status?: number })?.status;
+      if (status === 401 || status === 403) return false;
+      return failureCount < 3;
+    },
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 8000),
+    refetchOnMount: true,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     staleTime: 5 * 60 * 1000,
