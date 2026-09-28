@@ -22,7 +22,7 @@ from app.models.analytics import (
 )
 from app.models.review import ReviewDecision, ReviewDecisionEnum
 from app.models.reporting import AnalyticsConfig, Report
-
+from app.models.preferences import DatasetPreference
 __all__ = [
     "TimestampMixin",
     "RoleEnum",
