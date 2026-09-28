@@ -6,6 +6,7 @@ import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import EntitiesPage from './pages/EntitiesPage';
+import EntityDetailPage from './pages/EntityDetailPage';
 import FindingsPage from './pages/FindingsPage';
 import FindingDetailPage from './pages/FindingDetailPage';
 import AlertsPage from './pages/AlertsPage';
@@ -23,13 +24,8 @@ import NotFoundPage from './pages/NotFoundPage';
 export default function App() {
   return (
     <Routes>
-      {/* Public landing page — first thing a visitor sees */}
       <Route path="/" element={<LandingPage />} />
-
-      {/* Auto-login (no credentials typed; used internally after Enter Platform) */}
       <Route path="/login" element={<LoginPage />} />
-
-      {/* Authenticated workspace */}
       <Route
         element={
           <ProtectedRoute>
@@ -39,6 +35,7 @@ export default function App() {
       >
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/entities" element={<EntitiesPage />} />
+        <Route path="/entities/:id" element={<EntityDetailPage />} />
         <Route path="/findings" element={<FindingsPage />} />
         <Route path="/findings/:id" element={<FindingDetailPage />} />
         <Route path="/alerts" element={<AlertsPage />} />
@@ -52,7 +49,6 @@ export default function App() {
         <Route path="/audit-log" element={<AuditLogPage />} />
         <Route path="/settings" element={<SettingsPage />} />
       </Route>
-
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );

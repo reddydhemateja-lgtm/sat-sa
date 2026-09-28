@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 import {
-  AlertTriangle,
   ArrowRight,
   Eye,
   GitCompare,
@@ -11,28 +10,36 @@ import {
 
 function LandingHeader() {
   return (
-    <header className="border-b border-navy-800/80 bg-navy-950/95 backdrop-blur-sm">
+    <header className="sticky top-0 z-40 border-b border-navy-800/70 bg-navy-950/80 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 lg:px-10">
         <Link to="/" className="flex items-center gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-md bg-navy-800 ring-1 ring-navy-700">
             <ShieldCheck className="h-4 w-4 text-white" strokeWidth={2.2} />
           </div>
           <div className="leading-tight">
-            <p className="text-sm font-semibold tracking-tight text-white">SAT-SA</p>
-            <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-slate-400">
+            <p className="text-sm font-semibold tracking-tight text-white">
+              SAT-SA
+            </p>
+            <p className="hidden text-[10px] font-medium uppercase tracking-[0.18em] text-slate-400 sm:block">
               Supervisory Analytics Tool for SOC Assessment
             </p>
           </div>
         </Link>
 
-        <nav className="hidden items-center gap-7 md:flex">
-          <a href="#about" className="text-[13px] font-medium text-slate-300 transition hover:text-white">About</a>
-          <a href="#platform" className="text-[13px] font-medium text-slate-300 transition hover:text-white">Platform</a>
-          <a href="#motto" className="text-[13px] font-medium text-slate-300 transition hover:text-white">Motto</a>
+        <nav className="hidden items-center gap-8 md:flex">
+          <a href="#about" className="text-[13px] font-medium text-slate-300 transition hover:text-white">
+            About
+          </a>
+          <a href="#platform" className="text-[13px] font-medium text-slate-300 transition hover:text-white">
+            Platform
+          </a>
+          <a href="#motto" className="text-[13px] font-medium text-slate-300 transition hover:text-white">
+            Motto
+          </a>
         </nav>
 
         <Link
-          to="/dashboard"
+          to="/login"
           className="inline-flex items-center gap-2 rounded-md border border-navy-700 bg-navy-900 px-3.5 py-1.5 text-[13px] font-medium text-slate-100 transition hover:border-navy-600 hover:bg-navy-800"
         >
           Enter Platform
@@ -50,6 +57,7 @@ function LandingVisual() {
     { code: 'SAT-2026-0104', entity: 'TELEC-C', category: 'Negative Space', priority: 'Medium' },
     { code: 'SAT-2026-0119', entity: 'BANK-A', category: 'Peer Deviation', priority: 'Low' },
   ];
+
   const indicatorBars = [
     { code: 'POWER-B', value: 87, tone: 'critical' as const },
     { code: 'GRID-N', value: 78, tone: 'critical' as const },
@@ -57,20 +65,26 @@ function LandingVisual() {
     { code: 'TELEC-C', value: 51, tone: 'warning' as const },
     { code: 'BANK-A', value: 34, tone: 'success' as const },
   ];
+
   const toneColor = (t: 'critical' | 'warning' | 'success') =>
     t === 'critical' ? '#dc2626' : t === 'warning' ? '#d97706' : '#16a34a';
 
   return (
     <div className="relative">
-      <div aria-hidden className="pointer-events-none absolute -inset-8 rounded-[24px] bg-accent/5 blur-3xl" />
+      <div aria-hidden className="pointer-events-none absolute -inset-10 rounded-[32px] bg-accent/5 blur-3xl" />
       <div className="relative rounded-xl border border-navy-800 bg-navy-900/70 p-2 shadow-2xl ring-1 ring-white/5">
         <div className="flex items-center gap-2 rounded-t-lg border-b border-navy-800 bg-navy-950/60 px-3 py-2">
           <span className="h-2 w-2 rounded-full bg-slate-600" />
           <span className="h-2 w-2 rounded-full bg-slate-700" />
           <span className="h-2 w-2 rounded-full bg-slate-700" />
           <div className="ml-3 flex-1 rounded-md bg-navy-900/80 px-2 py-1">
-            <p className="font-mono text-[10px] text-slate-500">sat-sa · supervisory overview · Q3-2026</p>
+            <p className="font-mono text-[10px] text-slate-500">
+              sat-sa · supervisory overview · Q3-2026
+            </p>
           </div>
+          <span className="rounded bg-navy-900/80 px-1.5 py-0.5 font-mono text-[9px] text-slate-500 ring-1 ring-navy-800">
+            LIVE
+          </span>
         </div>
         <div className="rounded-b-lg bg-navy-950 p-4">
           <div className="mb-4 grid grid-cols-4 gap-2">
@@ -148,11 +162,14 @@ function HeroSection() {
           backgroundSize: '48px 48px',
         }}
       />
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-64 bg-gradient-to-b from-accent/5 to-transparent" />
       <div className="relative mx-auto grid max-w-7xl grid-cols-1 gap-14 px-6 py-20 lg:grid-cols-2 lg:gap-16 lg:px-10 lg:py-28">
         <div className="flex flex-col justify-center">
           <div className="mb-6 inline-flex w-fit items-center gap-2 rounded-full border border-navy-800 bg-navy-900/60 px-3 py-1">
             <ShieldCheck className="h-3.5 w-3.5 text-accent-soft" strokeWidth={2.2} />
-            <span className="text-[11px] font-medium uppercase tracking-[0.18em] text-slate-300">NTRO · NCIIPC</span>
+            <span className="text-[11px] font-medium uppercase tracking-[0.18em] text-slate-300">
+              NTRO · NCIIPC
+            </span>
           </div>
           <h1 className="text-4xl font-semibold leading-[1.08] tracking-tight text-white sm:text-5xl lg:text-[56px]">
             Smarter Oversight for a
@@ -160,17 +177,22 @@ function HeroSection() {
             <span className="text-accent-soft">Safer Digital India.</span>
           </h1>
           <p className="mt-6 max-w-xl text-[15px] leading-relaxed text-slate-300">
-            SAT-SA analyzes periodic SOC and case data from Critical Sector Entities to identify potential execution gaps, missing evidence, anomalies and peer deviations — helping supervisors focus where it matters most.
+            SAT-SA analyzes periodic SOC and case data from Critical Sector
+            Entities to identify potential execution gaps, missing evidence,
+            anomalies and peer deviations — helping supervisors focus where it
+            matters most.
           </p>
           <div className="mt-9 flex flex-wrap items-center gap-4">
             <Link
-              to="/dashboard"
+              to="/login"
               className="inline-flex items-center gap-2 rounded-md bg-accent px-5 py-2.5 text-sm font-medium text-white transition hover:bg-accent-deep"
             >
               Enter Platform
               <ArrowRight className="h-4 w-4" />
             </Link>
-            <span className="text-xs text-slate-500">Runs locally · Offline · Air-gapped</span>
+            <span className="text-xs text-slate-500">
+              Runs locally · Offline · Air-gapped
+            </span>
           </div>
           <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-navy-800/80 pt-5">
             {['Explainable analytics', 'Evidence traceability', 'Human-in-the-loop'].map((t) => (
@@ -190,11 +212,11 @@ function HeroSection() {
 }
 
 const CAPABILITIES = [
-  { icon: AlertTriangle, title: 'Detects Execution Gaps', description: 'Identifies patterns that may require supervisory review.' },
-  { icon: Eye, title: 'Finds Missing Evidence', description: 'Highlights expected evidence that is not observed.' },
-  { icon: TrendingUp, title: 'Identifies Anomalies', description: 'Detects unusual operational patterns.' },
-  { icon: GitCompare, title: 'Enables Peer Comparison', description: 'Compares operational indicators across selected entities.' },
-  { icon: ListChecks, title: 'Prioritizes Review', description: 'Helps supervisors focus attention where it matters most.' },
+  { icon: TrendingUp, step: '01', title: 'Detect', description: 'Execution gaps, anomalies, and missing evidence across submissions.' },
+  { icon: GitCompare, step: '02', title: 'Compare', description: 'Normalized indicators across peer groups of similar entities.' },
+  { icon: ListChecks, step: '03', title: 'Prioritize', description: 'Ranked findings so supervisors focus where it matters most.' },
+  { icon: Eye, step: '04', title: 'Review', description: 'Every finding links to the underlying alert, case, or investigation.' },
+  { icon: ShieldCheck, step: '05', title: 'Decide', description: 'Confirm, reject, or request further review — recorded in the audit trail.' },
 ];
 
 function CapabilitySection() {
@@ -202,10 +224,15 @@ function CapabilitySection() {
     <section id="platform" className="border-t border-navy-800/80 bg-navy-950 py-20 lg:py-24">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <div className="mb-14 max-w-2xl">
-          <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-accent-soft">Core capabilities</p>
-          <h2 className="mt-3 text-2xl font-semibold tracking-tight text-white sm:text-3xl">What SAT-SA does for supervisors.</h2>
+          <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-accent-soft">
+            How it works
+          </p>
+          <h2 className="mt-3 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+            From evidence to supervisory decision.
+          </h2>
           <p className="mt-3 text-sm leading-relaxed text-slate-400">
-            Five analytical lenses applied to every CSE submission — each producing findings that are fully traceable to their source records.
+            A five-step flow applied to every CSE submission — traceable end to
+            end, with the human supervisor in the loop.
           </p>
         </div>
         <div className="grid grid-cols-1 gap-px overflow-hidden rounded-lg border border-navy-800 bg-navy-800 sm:grid-cols-2 lg:grid-cols-5">
@@ -213,8 +240,11 @@ function CapabilitySection() {
             const Icon = c.icon;
             return (
               <div key={c.title} className="bg-navy-950 p-6 transition hover:bg-navy-900/60">
-                <div className="flex h-9 w-9 items-center justify-center rounded-md bg-navy-900 ring-1 ring-navy-800">
-                  <Icon className="h-4 w-4 text-accent-soft" strokeWidth={2} />
+                <div className="flex items-center justify-between">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-md bg-navy-900 ring-1 ring-navy-800">
+                    <Icon className="h-4 w-4 text-accent-soft" strokeWidth={2} />
+                  </div>
+                  <span className="font-mono text-[10px] text-slate-500">{c.step}</span>
                 </div>
                 <p className="mt-4 text-sm font-semibold text-white">{c.title}</p>
                 <p className="mt-2 text-[12px] leading-relaxed text-slate-400">{c.description}</p>
@@ -266,16 +296,12 @@ function LandingFooter() {
           </div>
           <div>
             <p className="text-sm font-semibold tracking-tight text-white">SAT-SA</p>
-            <p className="text-[11px] uppercase tracking-wider text-slate-500">
-              Supervisory Analytics Tool for SOC Assessment
-            </p>
+            <p className="text-[11px] uppercase tracking-wider text-slate-500">Supervisory Analytics Tool for SOC Assessment</p>
           </div>
         </div>
         <div className="flex flex-col gap-1 text-right">
           <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400">NTRO · NCIIPC</p>
-          <p className="text-[11px] uppercase tracking-wider text-slate-600">
-            Smart India Hackathon 2026 · SIH26157
-          </p>
+          <p className="text-[11px] uppercase tracking-wider text-slate-600">Smart India Hackathon 2026 · SIH26157</p>
         </div>
       </div>
     </footer>

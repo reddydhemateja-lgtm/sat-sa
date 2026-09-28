@@ -1,4 +1,5 @@
 import { Loader2, Users } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 import Card, { CardHeader } from '../components/ui/Card';
 import Badge from '../components/ui/Badge';
@@ -25,7 +26,7 @@ export default function EntitiesPage() {
         <div className="border-b border-slate-200 px-5 py-4 dark:border-navy-800">
           <CardHeader
             title="Registered Entities"
-            subtitle="Sector · Peer group · Activity · Indicator"
+            subtitle="Click any row to see the entity's submitted files"
           />
         </div>
 
@@ -63,21 +64,35 @@ export default function EntitiesPage() {
                   <th className="px-4 py-2.5 font-medium">Criticality</th>
                   <th className="px-4 py-2.5 text-right font-medium">Alerts</th>
                   <th className="px-4 py-2.5 text-right font-medium">Cases</th>
-                  <th className="px-4 py-2.5 text-right font-medium">Findings</th>
-                  <th className="px-4 py-2.5 text-right font-medium">Indicator</th>
+                  <th className="px-4 py-2.5 text-right font-medium">
+                    Findings
+                  </th>
+                  <th className="px-4 py-2.5 text-right font-medium">
+                    Indicator
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {data!.map((e) => (
                   <tr
                     key={e.id}
-                    className="border-b border-slate-100 last:border-b-0 hover:bg-slate-50/60 dark:border-navy-800 dark:hover:bg-navy-800/40"
+                    className="cursor-pointer border-b border-slate-100 last:border-b-0 hover:bg-slate-50/60 dark:border-navy-800 dark:hover:bg-navy-800/40"
                   >
-                    <td className="px-4 py-2.5 font-mono text-xs text-slate-700 dark:text-slate-200">
-                      {e.code}
+                    <td className="px-4 py-2.5 font-mono text-xs">
+                      <Link
+                        to={`/entities/${e.id}`}
+                        className="text-accent hover:underline dark:text-accent-soft"
+                      >
+                        {e.code}
+                      </Link>
                     </td>
                     <td className="px-4 py-2.5 text-slate-800 dark:text-slate-200">
-                      {e.name}
+                      <Link
+                        to={`/entities/${e.id}`}
+                        className="hover:text-accent dark:hover:text-accent-soft"
+                      >
+                        {e.name}
+                      </Link>
                     </td>
                     <td className="px-4 py-2.5 text-slate-600 dark:text-slate-300">
                       {e.sector}
