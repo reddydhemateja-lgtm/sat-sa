@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 
 import AppShell from './components/layout/AppShell';
 import ProtectedRoute from './components/auth/ProtectedRoute';
+import IntroPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import EntitiesPage from './pages/EntitiesPage';
@@ -19,11 +20,40 @@ import SettingsPage from './pages/SettingsPage';
 import IngestionPage from './pages/IngestionPage';
 import NotFoundPage from './pages/NotFoundPage';
 
+import { getToken } from './services/api';
+
+function introSeen(): boolean {
+  try {
+    return sessionStorage.getItem('sat-sa-intro-seen') === '1';
+  } catch {
+    return false;
+  }
+}
+
 export default function App() {
+  const hasToken = Boolean(getToken());
+  const seenIntro = introSeen();
+
   return (
     <Routes>
+      {/* Landing page — shown first, once per session */}
+      <Route
+        path="/"
+        element={
+          seenIntro && hasToken ? (
+            <Navigate to="/dashboard" replace />
+          ) : seenIntro ? (
+            <Navigate to="/login" replace />
+          ) : (
+            <IntroPage />
+          )
+        }
+      />
+
+      {/* Auto-login page (no form) */}
       <Route path="/login" element={<LoginPage />} />
 
+      {/* Authenticated workspace */}
       <Route
         element={
           <ProtectedRoute>
@@ -31,7 +61,6 @@ export default function App() {
           </ProtectedRoute>
         }
       >
-        <Route index element={<Navigate to="/dashboard" replace />} />
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/entities" element={<EntitiesPage />} />
         <Route path="/findings" element={<FindingsPage />} />

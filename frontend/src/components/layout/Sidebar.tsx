@@ -22,13 +22,13 @@ interface NavItem {
   to: string;
   label: string;
   icon: LucideIcon;
-  highlight?: boolean;
+  /** Renders slightly taller with a larger icon — used for Ingestion */
+  prominent?: boolean;
 }
 
-// Ingestion first — it's the entry point for CSE data.
 const primaryNav: NavItem[] = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { to: '/ingestion', label: 'Ingestion', icon: FolderUp, highlight: true },
+  { to: '/ingestion', label: 'Ingestion', icon: FolderUp, prominent: true },
   { to: '/entities', label: 'Entities', icon: Users },
   { to: '/findings', label: 'Findings', icon: AlertTriangle },
   { to: '/alerts', label: 'Alerts', icon: Bell },
@@ -119,39 +119,41 @@ function NavGroup({ items, collapsed }: { items: NavItem[]; collapsed: boolean }
     <ul className="space-y-0.5">
       {items.map((item) => {
         const Icon = item.icon;
+        const isProminent = Boolean(item.prominent);
         return (
           <li key={item.to}>
             <NavLink
               to={item.to}
               title={collapsed ? item.label : undefined}
-              className={({ isActive }) => {
-                const base =
-                  'group flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-sm font-medium transition-colors';
-                if (item.highlight && !isActive) {
-                  return clsx(
-                    base,
-                    collapsed && 'justify-center px-0',
-                    // highlighted, but not active
-                    'border border-accent/30 bg-accent/5 text-accent hover:bg-accent/10',
-                    'dark:border-accent-soft/30 dark:bg-accent-soft/10 dark:text-accent-soft dark:hover:bg-accent-soft/20',
-                  );
-                }
-                return clsx(
-                  base,
-                  collapsed && 'justify-center px-0',
-                  isActive
-                    ? 'bg-navy-50 text-navy-800 dark:bg-navy-800 dark:text-white'
-                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-navy-800 dark:hover:text-white',
-                );
-              }}
+              className={({ isActive }) =>
+                clsx(
+                  'group flex items-center gap-2.5 rounded-md transition-colors',
+                  collapsed && 'justify-center',
+                  isProminent
+                    ? // Ingestion: taller, larger text/icon, no border, no tint
+                      clsx(
+                        'px-3 py-2.5 text-[15px] font-semibold',
+                        collapsed && 'px-0',
+                        isActive
+                          ? 'bg-navy-50 text-navy-800 dark:bg-navy-800 dark:text-white'
+                          : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-200 dark:hover:bg-navy-800 dark:hover:text-white',
+                      )
+                    : // Normal items
+                      clsx(
+                        'px-2.5 py-1.5 text-sm font-medium',
+                        collapsed && 'px-0',
+                        isActive
+                          ? 'bg-navy-50 text-navy-800 dark:bg-navy-800 dark:text-white'
+                          : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-navy-800 dark:hover:text-white',
+                      ),
+                )
+              }
             >
-              <Icon className="h-4 w-4 shrink-0" strokeWidth={2} />
+              <Icon
+                className={isProminent ? 'h-[18px] w-[18px] shrink-0' : 'h-4 w-4 shrink-0'}
+                strokeWidth={isProminent ? 2.2 : 2}
+              />
               {!collapsed && <span className="truncate">{item.label}</span>}
-              {!collapsed && item.highlight && (
-                <span className="ml-auto rounded-full bg-accent/15 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-accent dark:bg-accent-soft/20 dark:text-accent-soft">
-                  Data
-                </span>
-              )}
             </NavLink>
           </li>
         );

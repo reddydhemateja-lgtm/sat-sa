@@ -12,6 +12,7 @@ import {
   TrendingUp,
   Upload,
 } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 
 import Card, { CardHeader } from '../components/ui/Card';
 import Badge from '../components/ui/Badge';
@@ -21,13 +22,9 @@ import CategoryDonutChart from '../components/charts/CategoryDonutChart';
 import FindingsTrendChart from '../components/charts/FindingsTrendChart';
 import IndicatorGauge from '../components/charts/IndicatorGauge';
 import EntityComparisonChart from '../components/charts/EntityComparisonChart';
-import {
-  useAnalyticsSummary,
-  useFindings,
-} from '../hooks/useFindings';
-import { useQuery } from '@tanstack/react-query';
-import { api } from '../services/api';
+import { useAnalyticsSummary, useFindings } from '../hooks/useFindings';
 import { useCurrentUser } from '../hooks/useAuth';
+import { api } from '../services/api';
 import { formatDateTime } from '../utils/format';
 
 interface SubmissionRow {
@@ -63,8 +60,7 @@ export default function DashboardPage() {
   });
 
   // ---- KPI tiles ----
-  const totalRecords =
-    (data?.alerts_total ?? 0) + (data?.cases_total ?? 0);
+  const totalRecords = (data?.alerts_total ?? 0) + (data?.cases_total ?? 0);
 
   const kpis = [
     {
@@ -118,7 +114,7 @@ export default function DashboardPage() {
 
   const topEntity = entityRanking[0];
 
-  // ---- Trend: group findings by detection month of their underlying record ----
+  // ---- Trend: group findings by creation month ----
   const trendData = (() => {
     const items = findingsPage?.items ?? [];
     if (items.length === 0) return [];
@@ -190,7 +186,7 @@ export default function DashboardPage() {
       </div>
 
       {/* ================================================================ */}
-      {/* SECTION 1 — Loaded demo dataset                                  */}
+      {/* SECTION 1 — Supervisory Overview                                 */}
       {/* ================================================================ */}
       <section className="space-y-6">
         <div className="flex items-center gap-3">
@@ -198,14 +194,14 @@ export default function DashboardPage() {
           <div className="flex items-center gap-2">
             <Database className="h-3.5 w-3.5 text-slate-400" />
             <p className="text-[11px] font-medium uppercase tracking-widest text-slate-500 dark:text-slate-400">
-              Section 1 — Loaded Demo Dataset
+              Section 1 — Supervisory Overview
             </p>
-            <Badge tone="neutral">synthetic baseline</Badge>
+            <Badge tone="neutral">{data?.period_label ?? 'Q3 2026'}</Badge>
           </div>
           <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-300 to-transparent dark:via-navy-700" />
         </div>
 
-        {/* KPI tiles with deltas */}
+        {/* KPI tiles */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {kpis.map((k) => {
             const Icon = k.icon;
@@ -244,9 +240,7 @@ export default function DashboardPage() {
             <CardHeader
               title="Findings Composition"
               subtitle="Distribution by analytical category"
-              action={
-                <Badge tone="neutral">{data?.findings_total ?? 0} total</Badge>
-              }
+              action={<Badge tone="neutral">{data?.findings_total ?? 0} total</Badge>}
             />
             {isLoading ? (
               <div className="flex h-64 items-center justify-center">
@@ -284,7 +278,7 @@ export default function DashboardPage() {
           </Card>
         </div>
 
-        {/* Trend + Ranking side by side */}
+        {/* Trend + Ranking */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           <Card className="lg:col-span-2">
             <CardHeader
@@ -379,7 +373,7 @@ export default function DashboardPage() {
       </section>
 
       {/* ================================================================ */}
-      {/* SECTION 2 — Uploaded data (this session)                         */}
+      {/* SECTION 2 — Uploaded Data                                        */}
       {/* ================================================================ */}
       <section className="space-y-6">
         <div className="flex items-center gap-3">
