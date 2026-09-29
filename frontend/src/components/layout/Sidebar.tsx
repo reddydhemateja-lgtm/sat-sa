@@ -5,6 +5,7 @@ import {
   BarChart3,
   Bell,
   ClipboardList,
+  Database,
   FileText,
   FolderSearch,
   FolderUp,
@@ -22,13 +23,13 @@ interface NavItem {
   to: string;
   label: string;
   icon: LucideIcon;
-  /** Renders slightly taller with a larger icon — used for Ingestion */
   prominent?: boolean;
 }
 
 const primaryNav: NavItem[] = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { to: '/ingestion', label: 'Ingestion', icon: FolderUp, prominent: true },
+  { to: '/data', label: 'Data', icon: Database, prominent: true },
+  { to: '/ingestion', label: 'Ingestion', icon: FolderUp },
   { to: '/entities', label: 'Entities', icon: Users },
   { to: '/findings', label: 'Findings', icon: AlertTriangle },
   { to: '/alerts', label: 'Alerts', icon: Bell },
@@ -58,7 +59,7 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
       className={clsx(
         'flex h-full flex-col border-r border-slate-200 bg-white transition-[width] duration-200',
         'dark:border-navy-800 dark:bg-navy-900',
-        collapsed ? 'w-16' : 'w-60',
+        collapsed ? 'w-16' : 'w-64',
       )}
     >
       <div
@@ -116,7 +117,7 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
 
 function NavGroup({ items, collapsed }: { items: NavItem[]; collapsed: boolean }) {
   return (
-    <ul className="space-y-0.5">
+    <ul className="space-y-1">
       {items.map((item) => {
         const Icon = item.icon;
         const isProminent = Boolean(item.prominent);
@@ -127,20 +128,18 @@ function NavGroup({ items, collapsed }: { items: NavItem[]; collapsed: boolean }
               title={collapsed ? item.label : undefined}
               className={({ isActive }) =>
                 clsx(
-                  'group flex items-center gap-2.5 rounded-md transition-colors',
+                  'group flex items-center rounded-md transition-colors',
                   collapsed && 'justify-center',
                   isProminent
-                    ? // Ingestion: taller, larger text/icon, no border, no tint
-                      clsx(
-                        'px-3 py-2.5 text-[15px] font-semibold',
-                        collapsed && 'px-0',
+                    ? clsx(
+                        'gap-3 px-3 py-3.5 text-[16px] font-semibold',
+                        collapsed && 'px-0 py-3',
                         isActive
-                          ? 'bg-navy-50 text-navy-800 dark:bg-navy-800 dark:text-white'
-                          : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-200 dark:hover:bg-navy-800 dark:hover:text-white',
+                          ? 'bg-navy-100 text-navy-900 dark:bg-navy-800 dark:text-white'
+                          : 'text-slate-800 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-100 dark:hover:bg-navy-800 dark:hover:text-white',
                       )
-                    : // Normal items
-                      clsx(
-                        'px-2.5 py-1.5 text-sm font-medium',
+                    : clsx(
+                        'gap-2.5 px-2.5 py-2 text-[13.5px] font-medium',
                         collapsed && 'px-0',
                         isActive
                           ? 'bg-navy-50 text-navy-800 dark:bg-navy-800 dark:text-white'
@@ -150,8 +149,8 @@ function NavGroup({ items, collapsed }: { items: NavItem[]; collapsed: boolean }
               }
             >
               <Icon
-                className={isProminent ? 'h-[18px] w-[18px] shrink-0' : 'h-4 w-4 shrink-0'}
-                strokeWidth={isProminent ? 2.2 : 2}
+                className={isProminent ? 'h-5 w-5 shrink-0' : 'h-4 w-4 shrink-0'}
+                strokeWidth={isProminent ? 2.4 : 2}
               />
               {!collapsed && <span className="truncate">{item.label}</span>}
             </NavLink>

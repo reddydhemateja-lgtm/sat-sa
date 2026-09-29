@@ -328,7 +328,7 @@ async def batch_scan(
 
 
 # ---------------------------------------------------------------------------
-# Batch commit (folder) — with auto-analytics and skip-duplicates
+# Batch commit (folder) — one DataSubmission per file, then auto-analytics
 # ---------------------------------------------------------------------------
 @router.post(
     "/batch/commit",
@@ -345,11 +345,9 @@ async def batch_commit(
     """
     Validate then persist a folder of files, in dependency order.
 
-    Duplicates (rows whose natural key already exists) are skipped — a
-    re-upload of the same folder will succeed and simply report how many
-    rows were skipped.
-
-    By default, the analytics pipeline runs immediately after the commit.
+    Each file inside the folder becomes its own DataSubmission row, so the
+    Data page shows a per-file list (alerts.csv, cases.csv, ...) instead of a
+    single batch row.
     """
     entity, period = await _resolve_entity_period(db, entity_id, period_id)
 
@@ -377,26 +375,44 @@ async def batch_commit(
     if not clean_by_type:
         raise HTTPException(status_code=400, detail="No valid rows found in any file")
 
-    batch_file_name = f"BATCH:{entity.code}:{period.label}:{len(payloads)} files"
-    submission = DataSubmission(
-        entity_id=entity_id,
-        period_id=period_id,
-        submitted_by=current_user.username,
-        file_name=batch_file_name,
-        file_hash="",
-        file_size=sum(len(b) for _, b in payloads),
-        format="batch",
-        payload_type="batch",
-        status="PROCESSING",
-        records_received=report.total_received,
-        records_valid=0,
-        records_warning=report.total_warning,
-        records_error=report.total_error,
-        validation_report=report.to_dict(),
-    )
-    db.add(submission)
-    await db.flush()
+    # ---- Create one DataSubmission row per file ----
+    file_reports = {f.file_name: f for f in report.files}
+    file_blobs = {name: blob for name, blob in payloads}
 
+    submission_by_file: dict[str, DataSubmission] = {}
+    submissions_by_payload: dict[str, DataSubmission] = {}
+
+    for filename, fr in file_reports.items():
+        if fr.payload_type is None:
+            continue
+        blob = file_blobs.get(filename, b"")
+        sub = DataSubmission(
+            entity_id=entity_id,
+            period_id=period_id,
+            submitted_by=current_user.username,
+            file_name=filename,
+            file_hash=_hash_file(blob) if blob else "",
+            file_size=len(blob),
+            format=fr.format or "csv",
+            payload_type=fr.payload_type,
+            status="PROCESSING",
+            records_received=fr.records_received,
+            records_valid=0,
+            records_warning=fr.records_warning,
+            records_error=fr.records_error,
+            validation_report=fr.to_dict(),
+        )
+        db.add(sub)
+        await db.flush()
+        submission_by_file[filename] = sub
+        if fr.payload_type not in submissions_by_payload:
+            submissions_by_payload[fr.payload_type] = sub
+
+    # Parent submission — used by commit_payload to tag the rows it inserts.
+    # We pick the first per-file submission as the parent.
+    parent_submission = next(iter(submission_by_file.values()))
+
+    # ---- Insert rows, grouped by payload type ----
     inserted: dict[str, int] = {}
     skipped: dict[str, int] = {}
     try:
@@ -410,7 +426,7 @@ async def batch_commit(
                 clean_df=df,
                 entity_id=entity_id,
                 period_id=period_id,
-                submission=submission,
+                submission=parent_submission,
                 submitted_by=current_user.username,
             )
             inserted[payload_type] = n_inserted
@@ -422,16 +438,33 @@ async def batch_commit(
     total_inserted = sum(inserted.values())
     total_skipped = sum(skipped.values())
 
-    submission.records_valid = total_inserted
-    submission.status = "COMMITTED"
-    await db.flush()
+    # ---- Distribute inserted counts across per-file submissions ----
+    per_payload_files: dict[str, list[DataSubmission]] = {}
+    for sub in submission_by_file.values():
+        per_payload_files.setdefault(sub.payload_type, []).append(sub)
 
+    for payload_type, subs in per_payload_files.items():
+        n = inserted.get(payload_type, 0)
+        if not subs:
+            continue
+        if n == 0:
+            for s in subs:
+                s.status = "COMMITTED"
+                s.records_valid = 0
+            continue
+        per = n // len(subs)
+        remainder = n - per * len(subs)
+        for i, s in enumerate(subs):
+            s.records_valid = per + (1 if i < remainder else 0)
+            s.status = "COMMITTED"
+
+    # Record the batch-level audit event referencing the first file's submission.
     await record_audit(
         db,
         user_id=current_user.id,
         action="INGEST_BATCH_COMMIT",
         target_type="data_submission",
-        target_id=submission.id,
+        target_id=parent_submission.id,
         new_value={
             "entity_id": entity_id,
             "period_id": period_id,
@@ -440,14 +473,12 @@ async def batch_commit(
             "records_inserted": total_inserted,
             "records_skipped": total_skipped,
             "by_payload": inserted,
-            "by_payload_skipped": skipped,
         },
     )
 
     await db.commit()
-    await db.refresh(submission)
 
-    # Auto-run analytics — wrapped so a failure doesn't fail the ingestion
+    # Auto-run analytics — wrapped so a failure doesn't fail the ingestion.
     analytics_summary: dict | None = None
     if run_analytics:
         try:
@@ -458,8 +489,9 @@ async def batch_commit(
             analytics_summary = {"error": str(e)}
 
     return {
-        "submission_id": submission.id,
-        "status": submission.status,
+        "submission_id": parent_submission.id,
+        "status": "COMMITTED",
+        "file_count": len(submission_by_file),
         "records_received": report.total_received,
         "records_inserted": total_inserted,
         "records_skipped_total": total_skipped,

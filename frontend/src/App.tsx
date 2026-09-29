@@ -7,6 +7,8 @@ import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import EntitiesPage from './pages/EntitiesPage';
 import EntityDetailPage from './pages/EntityDetailPage';
+import DataPage from './pages/DataPage';
+import DatasetDetailPage from './pages/DatasetDetailPage';
 import FindingsPage from './pages/FindingsPage';
 import FindingDetailPage from './pages/FindingDetailPage';
 import AlertsPage from './pages/AlertsPage';
@@ -36,6 +38,8 @@ export default function App() {
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/entities" element={<EntitiesPage />} />
         <Route path="/entities/:id" element={<EntityDetailPage />} />
+        <Route path="/data" element={<DataPage />} />
+        <Route path="/data/:id" element={<DatasetDetailPage />} />
         <Route path="/findings" element={<FindingsPage />} />
         <Route path="/findings/:id" element={<FindingDetailPage />} />
         <Route path="/alerts" element={<AlertsPage />} />
