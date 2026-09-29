@@ -17,7 +17,7 @@ import json
 from datetime import datetime
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.analytics.orchestrator import run_analytics_for_period
@@ -62,6 +62,31 @@ async def _resolve_entity_period(
 async def _known_entity_codes(db: AsyncSession) -> set[str]:
     result = await db.execute(select(CSEEntity.code))
     return {c for (c,) in result.all()}
+
+
+async def _next_dataset_version(
+    db: AsyncSession, *, entity_id: int, period_id: int, file_name: str
+) -> int:
+    """
+    Return the next version number for a (entity, period, file_name) tuple.
+
+    Re-uploading the same filename for the same entity+period does NOT
+    overwrite — it increments the version so the prior submission remains
+    available for supervisory comparison (spec §9).
+
+    New file → version 1
+    Second upload of same file → version 2
+    ...
+    """
+    result = await db.execute(
+        select(func.max(DataSubmission.version)).where(
+            DataSubmission.entity_id == entity_id,
+            DataSubmission.period_id == period_id,
+            DataSubmission.file_name == file_name,
+        )
+    )
+    current_max = result.scalar_one_or_none()
+    return int(current_max or 0) + 1
 
 
 # ---------------------------------------------------------------------------
@@ -213,15 +238,21 @@ async def commit(
             status_code=400, detail="No valid rows to commit. Fix the errors and retry."
         )
 
+    resolved_filename = file.filename or "upload.bin"
+    version = await _next_dataset_version(
+        db, entity_id=entity_id, period_id=period_id, file_name=resolved_filename
+    )
+
     submission = DataSubmission(
         entity_id=entity_id,
         period_id=period_id,
         submitted_by=current_user.username,
-        file_name=file.filename or "upload.bin",
+        file_name=resolved_filename,
         file_hash=_hash_file(blob),
         file_size=len(blob),
         format=fmt,
         payload_type=payload_type,
+        version=version,
         status="PROCESSING",
         records_received=summary.records_received,
         records_valid=0,
@@ -256,7 +287,8 @@ async def commit(
             "entity_id": entity_id,
             "period_id": period_id,
             "payload_type": payload_type,
-            "file_name": file.filename,
+            "file_name": resolved_filename,
+            "version": version,
             "records_received": summary.records_received,
             "records_inserted": inserted,
             "records_skipped": skipped,
@@ -278,6 +310,7 @@ async def commit(
 
     return {
         "submission_id": submission.id,
+        "version": version,
         "status": submission.status,
         "records_received": summary.records_received,
         "records_inserted": inserted,
@@ -386,6 +419,11 @@ async def batch_commit(
         if fr.payload_type is None:
             continue
         blob = file_blobs.get(filename, b"")
+
+        version = await _next_dataset_version(
+            db, entity_id=entity_id, period_id=period_id, file_name=filename
+        )
+
         sub = DataSubmission(
             entity_id=entity_id,
             period_id=period_id,
@@ -395,6 +433,7 @@ async def batch_commit(
             file_size=len(blob),
             format=fr.format or "csv",
             payload_type=fr.payload_type,
+            version=version,
             status="PROCESSING",
             records_received=fr.records_received,
             records_valid=0,
@@ -408,8 +447,6 @@ async def batch_commit(
         if fr.payload_type not in submissions_by_payload:
             submissions_by_payload[fr.payload_type] = sub
 
-    # Parent submission — used by commit_payload to tag the rows it inserts.
-    # We pick the first per-file submission as the parent.
     parent_submission = next(iter(submission_by_file.values()))
 
     # ---- Insert rows, grouped by payload type ----
@@ -458,7 +495,6 @@ async def batch_commit(
             s.records_valid = per + (1 if i < remainder else 0)
             s.status = "COMMITTED"
 
-    # Record the batch-level audit event referencing the first file's submission.
     await record_audit(
         db,
         user_id=current_user.id,
@@ -478,7 +514,6 @@ async def batch_commit(
 
     await db.commit()
 
-    # Auto-run analytics — wrapped so a failure doesn't fail the ingestion.
     analytics_summary: dict | None = None
     if run_analytics:
         try:
@@ -533,6 +568,7 @@ async def list_submissions(
             "file_name": r.file_name,
             "format": r.format,
             "payload_type": r.payload_type,
+            "version": r.version,
             "status": r.status,
             "records_received": r.records_received,
             "records_valid": r.records_valid,
@@ -569,6 +605,7 @@ async def get_submission(
         "file_name": sub.file_name,
         "format": sub.format,
         "payload_type": sub.payload_type,
+        "version": sub.version,
         "status": sub.status,
         "records_received": sub.records_received,
         "records_valid": sub.records_valid,

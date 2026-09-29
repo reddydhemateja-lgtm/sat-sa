@@ -9,6 +9,14 @@ explicit Expected / Observed / Missing structure.
 UI contract: for every NS finding, the three fields
     expected_behavior, observed_pattern, narrative
 are rendered as three separate columns in the finding-detail view.
+
+Classification (spec §16):
+    SUBMISSION_QUALITY  — the CSE did not submit enough data to make a call
+    EVIDENCE_GAP        — data was submitted, but a specific chain is broken
+    SUPERVISORY_FINDING — pattern persists / strongly deviates from peers
+
+Missing data must never be treated as a cybersecurity failure without
+first ruling out a submission problem.
 """
 
 from __future__ import annotations
@@ -80,6 +88,38 @@ async def _load(db: AsyncSession, entity_id: int, period_id: int) -> dict:
 
 
 # ---------------------------------------------------------------------------
+# Classification helper (spec §16)
+# ---------------------------------------------------------------------------
+def _classify_ns(data: dict, cfg: dict, rule_id: str) -> str:
+    """
+    Tag every NS finding with one of:
+        SUBMISSION_QUALITY | EVIDENCE_GAP | SUPERVISORY_FINDING
+
+    Heuristic:
+      - If the entity+period has low submission completeness → SUBMISSION_QUALITY
+      - If no data at all was submitted for what the rule inspects → SUBMISSION_QUALITY
+      - If the pattern is flagged as persistent (multi-period) → SUPERVISORY_FINDING
+      - Otherwise → EVIDENCE_GAP
+    """
+    completeness = cfg.get("_entity_submission_completeness")
+    if completeness is not None:
+        threshold = cfg_get(cfg, "ns.classification.min_completeness", 0.7)
+        if completeness < threshold:
+            return "SUBMISSION_QUALITY"
+
+    # No submitted data of the kind this rule inspects.
+    if rule_id in ("NS-001", "NS-003", "NS-004"):
+        if not data.get("cases") and not data.get("alerts"):
+            return "SUBMISSION_QUALITY"
+
+    persistent = cfg.get("_entity_persistent_rules") or set()
+    if rule_id in persistent:
+        return "SUPERVISORY_FINDING"
+
+    return "EVIDENCE_GAP"
+
+
+# ---------------------------------------------------------------------------
 # Rules
 # ---------------------------------------------------------------------------
 def ns_001_critical_assets_without_alerts(data: dict, cfg: dict) -> list[FindingDraft]:
@@ -123,6 +163,7 @@ def ns_001_critical_assets_without_alerts(data: dict, cfg: dict) -> list[Finding
                      "snippet": f"{asset.asset_code} ({asset.asset_type})",
                      "weight": 1.0},
                 ],
+                classification=_classify_ns(data, cfg, "NS-001"),
             )
         )
         if len(out) >= 5:
@@ -132,8 +173,6 @@ def ns_001_critical_assets_without_alerts(data: dict, cfg: dict) -> list[Finding
 
 def ns_002_missing_category_vs_peers(data: dict, cfg: dict) -> list[FindingDraft]:
     """NS-002: A category that peers see commonly is absent here."""
-    # This rule needs the peer context, which the orchestrator injects via cfg
-    # under the key "_peer_category_distribution": {peer_group: {cat: count}}
     peer_dist = cfg.get("_peer_category_distribution")
     if not peer_dist:
         return []
@@ -145,7 +184,6 @@ def ns_002_missing_category_vs_peers(data: dict, cfg: dict) -> list[FindingDraft
 
     peer_group_data = peer_dist.get(entity_peer_group, {})
     if len(peer_group_data) < cfg_get(cfg, "ns_002.min_peer_volume", 20):
-        # Not enough peers to compare reliably
         pass
 
     entity_counts: dict[str, int] = defaultdict(int)
@@ -157,9 +195,6 @@ def ns_002_missing_category_vs_peers(data: dict, cfg: dict) -> list[FindingDraft
     for cat, peer_count in peer_group_data.items():
         if peer_count < 5:
             continue
-        # expected here: peer_median ratio scaled by this entity's alert volume
-        # simple version: entity should have at least `ratio_threshold` fraction
-        # of its peer's relative presence
         entity_count = entity_counts.get(cat, 0)
         peer_avg = peer_count / max(1, len(peer_dist))
         if entity_count < peer_avg * ratio_threshold:
@@ -189,6 +224,7 @@ def ns_002_missing_category_vs_peers(data: dict, cfg: dict) -> list[FindingDraft
                         "peer_average": round(peer_avg, 2),
                     },
                     evidence=[],
+                    classification=_classify_ns(data, cfg, "NS-002"),
                 )
             )
         if len(out) >= 3:
@@ -242,6 +278,7 @@ def ns_003_critical_without_investigation(data: dict, cfg: dict) -> list[Finding
                     {"record_type": "case", "record_id": case.id,
                      "snippet": case.external_id, "weight": 1.0},
                 ],
+                classification=_classify_ns(data, cfg, "NS-003"),
             )
         )
         if len(out) >= 15:
@@ -284,6 +321,7 @@ def ns_004_critical_without_escalation(data: dict, cfg: dict) -> list[FindingDra
                     {"record_type": "case", "record_id": c.id,
                      "snippet": c.external_id, "weight": 1.0},
                 ],
+                classification=_classify_ns(data, cfg, "NS-004"),
             )
         )
         if len(out) >= 15:
@@ -293,15 +331,11 @@ def ns_004_critical_without_escalation(data: dict, cfg: dict) -> list[FindingDra
 
 def ns_005_low_activity_vs_history(data: dict, cfg: dict) -> list[FindingDraft]:
     """NS-005: Activity level far below the entity's own historical mean."""
-    # In this first pass, "history" is approximated by the group's overall mean.
-    # When multi-period data exists, replace this with a per-entity query.
     threshold = cfg_get(cfg, "ns_005.activity_ratio_threshold", 0.4)
     alerts: list[Alert] = data["alerts"]
     if not alerts:
         return []
 
-    # Simplified: if entity is the smallest contributor and has < threshold * group mean
-    # The orchestrator will inject "_group_mean_volume" when it has that.
     group_mean = cfg.get("_group_mean_volume")
     if group_mean is None or group_mean <= 0:
         return []
@@ -334,6 +368,7 @@ def ns_005_low_activity_vs_history(data: dict, cfg: dict) -> list[FindingDraft]:
                 "ratio": round(ratio, 3),
             },
             evidence=[],
+            classification=_classify_ns(data, cfg, "NS-005"),
         )
     ]
 

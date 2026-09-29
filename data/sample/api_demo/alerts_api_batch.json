@@ -1,0 +1,12 @@
+{
+  "source": "DEMO_SOC_API",
+  "label": "SYNTHETIC — SIH demonstration data, not from any real CSE",
+  "generated_for": "SAT-SA API connector demo",
+  "records": [
+    {"entity_code": "BANK-A", "external_id": "API-BANK-A-ALT-00001", "title": "Credential Dumping activity detected", "description": "Automated CREDENTIAL_DUMP alert via demo API", "severity": "HIGH", "category": "CREDENTIAL_ACCESS", "source_system": "EDR", "asset_code": "BANK-A-AST-0003", "detected_at": "2026-09-28 08:14:22", "acknowledged_at": "2026-09-28 08:24:22", "closed_at": "", "status": "INVESTIGATING"},
+    {"entity_code": "BANK-A", "external_id": "API-BANK-A-ALT-00002", "title": "Lateral Movement activity detected", "description": "Automated LATERAL_MOVEMENT alert via demo API", "severity": "CRITICAL", "category": "LATERAL_MOVEMENT", "source_system": "NDR", "asset_code": "BANK-A-AST-0012", "detected_at": "2026-09-28 11:02:11", "acknowledged_at": "2026-09-28 11:05:11", "closed_at": "", "status": "OPEN"},
+    {"entity_code": "BANK-A", "external_id": "API-BANK-A-ALT-00003", "title": "Data Exfiltration activity detected", "description": "Automated DATA_EXFILTRATION alert via demo API", "severity": "HIGH", "category": "DATA_EXFILTRATION", "source_system": "WAF", "asset_code": "BANK-A-AST-0044", "detected_at": "2026-09-29 02:44:56", "acknowledged_at": "2026-09-29 03:10:56", "closed_at": "2026-09-29 03:19:56", "status": "CLOSED"},
+    {"entity_code": "BANK-A", "external_id": "API-BANK-A-ALT-00004", "title": "Malware activity detected", "description": "Automated MALWARE alert via demo API", "severity": "MEDIUM", "category": "MALWARE", "source_system": "EDR", "asset_code": "BANK-A-AST-0017", "detected_at": "2026-09-29 09:12:33", "acknowledged_at": "2026-09-29 09:22:33", "closed_at": "2026-09-30 04:12:33", "status": "CLOSED"},
+    {"entity_code": "BANK-A", "external_id": "API-BANK-A-ALT-00005", "title": "Policy Violation activity detected", "description": "Automated POLICY_VIOLATION alert via demo API", "severity": "LOW", "category": "POLICY_VIOLATION", "source_system": "SIEM", "asset_code": "BANK-A-AST-0028", "detected_at": "2026-09-29 15:40:18", "acknowledged_at": "2026-09-29 15:49:18", "closed_at": "2026-09-29 23:59:18", "status": "CLOSED"}
+  ]
+}

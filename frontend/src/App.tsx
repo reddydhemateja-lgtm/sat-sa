@@ -21,6 +21,9 @@ import ReportsPage from './pages/ReportsPage';
 import AuditLogPage from './pages/AuditLogPage';
 import SettingsPage from './pages/SettingsPage';
 import IngestionPage from './pages/IngestionPage';
+import ApiConnectionsPage from './pages/ApiConnectionsPage';
+import DataFlowPage from './pages/DataFlowPage';
+import AnalyticsFlowPage from './pages/AnalyticsFlowPage';
 import NotFoundPage from './pages/NotFoundPage';
 
 export default function App() {
@@ -39,13 +42,16 @@ export default function App() {
         <Route path="/entities" element={<EntitiesPage />} />
         <Route path="/entities/:id" element={<EntityDetailPage />} />
         <Route path="/data" element={<DataPage />} />
+        <Route path="/data/connectors" element={<ApiConnectionsPage />} />
         <Route path="/data/:id" element={<DatasetDetailPage />} />
+        <Route path="/data-flow" element={<DataFlowPage />} />
         <Route path="/findings" element={<FindingsPage />} />
         <Route path="/findings/:id" element={<FindingDetailPage />} />
         <Route path="/alerts" element={<AlertsPage />} />
         <Route path="/cases" element={<CasesPage />} />
         <Route path="/investigations" element={<InvestigationsPage />} />
         <Route path="/analytics" element={<AnalyticsPage />} />
+        <Route path="/analytics-flow" element={<AnalyticsFlowPage />} />
         <Route path="/ingestion" element={<IngestionPage />} />
         <Route path="/peer" element={<PeerComparisonPage />} />
         <Route path="/review-queue" element={<ReviewQueuePage />} />

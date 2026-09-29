@@ -35,3 +35,11 @@ reports/*.csv
 reports/*.xlsx
 data/sample - Copy/ 
 data/*- Copy*/ 
+sat-sa-dump.txt
+sat-sa-heads.txt
+sat-sa-filelist.txt
+backend/.venv/
+backend/__pycache__/
+backend/sat_sa.db
+frontend/node_modules/
+frontend/dist/

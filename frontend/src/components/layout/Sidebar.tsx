@@ -12,9 +12,12 @@ import {
   GitCompare,
   LayoutDashboard,
   ListChecks,
+  Plug,
+  Route,
   Settings,
   ShieldCheck,
   Users,
+  Workflow,
   type LucideIcon,
 } from 'lucide-react';
 import clsx from 'clsx';
@@ -28,8 +31,6 @@ interface NavItem {
 
 const primaryNav: NavItem[] = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { to: '/data', label: 'Data', icon: Database, prominent: true },
-  { to: '/ingestion', label: 'Ingestion', icon: FolderUp },
   { to: '/entities', label: 'Entities', icon: Users },
   { to: '/findings', label: 'Findings', icon: AlertTriangle },
   { to: '/alerts', label: 'Alerts', icon: Bell },
@@ -37,8 +38,16 @@ const primaryNav: NavItem[] = [
   { to: '/investigations', label: 'Investigations', icon: FolderSearch },
 ];
 
+const dataNav: NavItem[] = [
+  { to: '/data', label: 'Datasets', icon: Database, prominent: true },
+  { to: '/ingestion', label: 'Upload Files', icon: FolderUp },
+  { to: '/data/connectors', label: 'API Connections', icon: Plug },
+  { to: '/data-flow', label: 'Data Flow', icon: Workflow },
+];
+
 const analyticsNav: NavItem[] = [
   { to: '/analytics', label: 'Analytics', icon: Activity },
+  { to: '/analytics-flow', label: 'Analytics Flow', icon: Route },
   { to: '/peer', label: 'Peer Comparison', icon: GitCompare },
   { to: '/review-queue', label: 'Review Queue', icon: ListChecks },
 ];
@@ -86,6 +95,10 @@ export default function Sidebar({ collapsed = false }: SidebarProps) {
       <nav className="flex-1 overflow-y-auto px-2 py-3">
         {!collapsed && <p className="section-heading px-2 pb-1.5">Overview</p>}
         <NavGroup items={primaryNav} collapsed={collapsed} />
+
+        <div className="my-3 border-t border-slate-200 dark:border-navy-800" />
+        {!collapsed && <p className="section-heading px-2 pb-1.5">Data</p>}
+        <NavGroup items={dataNav} collapsed={collapsed} />
 
         <div className="my-3 border-t border-slate-200 dark:border-navy-800" />
         {!collapsed && <p className="section-heading px-2 pb-1.5">Analytics</p>}

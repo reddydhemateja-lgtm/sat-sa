@@ -43,6 +43,7 @@ export interface Finding {
   period_id: number;
   category: FindingCategory;
   rule_id: string;
+    classification: string | null;
   title: string;
   narrative: string;
   expected_behavior: string | null;

@@ -42,6 +42,7 @@ class FindingDraft:
     indicator: float                  # contribution to Supervisory Review Indicator
     metrics: dict[str, Any] = field(default_factory=dict)
     evidence: list[dict[str, Any]] = field(default_factory=list)
+    classification: str | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -121,6 +122,7 @@ async def persist_findings(
             confidence=Decimal(f"{d.confidence:.3f}"),
             review_indicator=Decimal(f"{d.indicator:.2f}"),
             metrics=d.metrics or None,
+            classification=d.classification,
             status="OPEN",
         )
         db.add(finding)

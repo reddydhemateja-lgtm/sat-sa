@@ -23,6 +23,24 @@ import {
 
 type DecisionType = 'CONFIRMED' | 'REJECTED' | 'FURTHER_REVIEW';
 
+const CLASSIFICATION_LABELS: Record<string, { label: string; tone: string; help: string }> = {
+  SUBMISSION_QUALITY: {
+    label: 'Submission quality issue',
+    tone: 'warning',
+    help: 'The CSE did not submit enough evidence for a firm read. Not a cybersecurity finding on its own.',
+  },
+  EVIDENCE_GAP: {
+    label: 'Operational evidence gap',
+    tone: 'critical',
+    help: 'Data was submitted, but a specific expected evidence chain is broken.',
+  },
+  SUPERVISORY_FINDING: {
+    label: 'Potential supervisory finding',
+    tone: 'critical',
+    help: 'Pattern persists across periods or deviates strongly from peers.',
+  },
+};
+
 export default function FindingDetailPage() {
   const { id } = useParams<{ id: string }>();
   const findingId = id ? Number(id) : null;
@@ -59,6 +77,9 @@ export default function FindingDetailPage() {
   }
 
   const f = data.finding;
+  const classification = f.classification
+    ? CLASSIFICATION_LABELS[f.classification] ?? null
+    : null;
 
   const handleDecide = async (decision: DecisionType) => {
     setPendingDecision(decision);
@@ -112,40 +133,67 @@ export default function FindingDetailPage() {
         </div>
       </div>
 
-      {/* WHAT / WHY / EVIDENCE grid */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
-          <CardHeader title="What was detected" subtitle="Narrative" />
-          <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-200">
-            {f.narrative}
-          </p>
+      {/* WHY THIS WAS FLAGGED */}
+      <Card>
+        <CardHeader
+          title="Why this was flagged"
+          subtitle="Every finding states what was observed, what was expected, and why the difference may indicate a gap."
+        />
 
-          <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div>
-              <p className="section-heading">Expected behaviour</p>
-              <p className="mt-1 text-sm text-slate-700 dark:text-slate-200">
-                {f.expected_behavior ?? '—'}
+        <div className="mt-4 space-y-5">
+          <div>
+            <p className="section-heading">What was detected</p>
+            <p className="mt-1 text-sm leading-relaxed text-slate-700 dark:text-slate-200">
+              {f.narrative}
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="rounded-md border border-slate-200 bg-slate-50/60 p-3 dark:border-navy-800 dark:bg-navy-950/40">
+              <p className="font-mono text-[10px] uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                Observed
+              </p>
+              <p className="mt-1 text-sm text-slate-800 dark:text-slate-100">
+                {f.observed_pattern ?? '—'}
               </p>
             </div>
-            <div>
-              <p className="section-heading">Observed pattern</p>
-              <p className="mt-1 text-sm text-slate-700 dark:text-slate-200">
-                {f.observed_pattern ?? '—'}
+            <div className="rounded-md border border-slate-200 bg-slate-50/60 p-3 dark:border-navy-800 dark:bg-navy-950/40">
+              <p className="font-mono text-[10px] uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                Expected
+              </p>
+              <p className="mt-1 text-sm text-slate-800 dark:text-slate-100">
+                {f.expected_behavior ?? '—'}
               </p>
             </div>
           </div>
 
-          <div className="mt-5">
-            <p className="section-heading">Analytical basis</p>
-            <p className="mt-1 text-sm text-slate-700 dark:text-slate-200">
+          <div>
+            <p className="section-heading">Why the difference may indicate a gap</p>
+            <p className="mt-1 text-sm leading-relaxed text-slate-700 dark:text-slate-200">
               {f.analytical_basis}
             </p>
           </div>
 
+          {classification && (
+            <div className="rounded-md border border-slate-200 bg-slate-50/60 p-3 dark:border-navy-800 dark:bg-navy-950/40">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="font-mono text-[10px] uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                  Classification
+                </span>
+                <Badge tone={classification.tone as 'warning' | 'critical'}>
+                  {classification.label}
+                </Badge>
+              </div>
+              <p className="mt-2 text-xs leading-relaxed text-slate-600 dark:text-slate-300">
+                {classification.help}
+              </p>
+            </div>
+          )}
+
           {f.metrics && Object.keys(f.metrics).length > 0 && (
-            <div className="mt-5">
-              <p className="section-heading">Metrics</p>
-              <dl className="mt-2 grid grid-cols-2 gap-3 text-xs">
+            <div>
+              <p className="section-heading">Supporting metrics</p>
+              <dl className="mt-2 grid grid-cols-2 gap-3 text-xs sm:grid-cols-3">
                 {Object.entries(f.metrics).map(([k, v]) => (
                   <div
                     key={k}
@@ -162,6 +210,37 @@ export default function FindingDetailPage() {
               </dl>
             </div>
           )}
+
+          <div>
+            <p className="section-heading">Result</p>
+            <p className="mt-1 text-sm text-slate-700 dark:text-slate-200">
+              {f.category === 'EXECUTION_GAP'
+                ? 'Potential execution gap — requires supervisor review.'
+                : f.category === 'NEGATIVE_SPACE'
+                  ? 'Potential evidence gap — requires supervisor review.'
+                  : f.category === 'ANOMALY'
+                    ? 'Potential anomaly — requires supervisor review.'
+                    : f.category === 'PEER_DEVIATION'
+                      ? 'Significant deviation from peer baseline — requires supervisor review.'
+                      : 'Requires supervisor review.'}
+            </p>
+          </div>
+        </div>
+      </Card>
+
+      {/* Entity + metadata */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <Card className="lg:col-span-2">
+          <CardHeader title="Traceability" subtitle="Where this finding points in the underlying data" />
+          <dl className="mt-3 space-y-2 text-sm">
+            <Row label="Entity" value={data.entity?.code ?? '—'} mono />
+            <Row label="Period" value={(data as unknown as { period?: { label?: string } }).period?.label ?? '—'} />
+            <Row label="Rule" value={f.rule_id} mono />
+            <Row label="Confidence" value={`${(f.confidence * 100).toFixed(0)}%`} />
+            <Row label="Review indicator" value={f.review_indicator.toFixed(1)} />
+            <Row label="Detected" value={formatDateTime(f.created_at)} />
+            <Row label="Evidence rows" value={String(data.evidence.length)} />
+          </dl>
         </Card>
 
         <Card>
@@ -177,16 +256,6 @@ export default function FindingDetailPage() {
           ) : (
             <p className="text-sm text-slate-500 dark:text-slate-400">—</p>
           )}
-
-          <div className="mt-5 space-y-2 text-sm">
-            <Row label="Rule" value={f.rule_id} mono />
-            <Row label="Confidence" value={`${(f.confidence * 100).toFixed(0)}%`} />
-            <Row
-              label="Review indicator"
-              value={f.review_indicator.toFixed(1)}
-            />
-            <Row label="Detected" value={formatDateTime(f.created_at)} />
-          </div>
         </Card>
       </div>
 

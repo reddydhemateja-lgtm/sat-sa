@@ -57,6 +57,9 @@ class Finding(Base, TimestampMixin):
     review_indicator: Mapped[Decimal] = mapped_column(Numeric(5, 2))
     metrics: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
     status: Mapped[str] = mapped_column(String(24), default="OPEN")
+    classification: Mapped[str | None] = mapped_column(
+        String(32), nullable=True, index=True
+    )
 
 
 class Evidence(Base, TimestampMixin):

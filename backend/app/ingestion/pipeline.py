@@ -64,7 +64,10 @@ class ValidationSummary:
 # ---------------------------------------------------------------------------
 # Reading
 # ---------------------------------------------------------------------------
-SUPPORTED_FORMATS = {"csv", "json", "xlsx", "xls"}
+SUPPORTED_FORMATS = {"csv", "json", "xlsx", "xls", "sqlite", "db", "parquet"}
+
+# DB-export formats route through db_export_adapter.read_db_export()
+DB_EXPORT_FORMATS = {"sqlite", "db", "parquet"}
 
 
 def detect_format(filename: str) -> str:
@@ -99,6 +102,11 @@ def read_file(blob: bytes, fmt: str) -> pd.DataFrame:
 
     if fmt in ("xlsx", "xls"):
         return pd.read_excel(buf, dtype=str).fillna("")
+
+    if fmt in DB_EXPORT_FORMATS:
+        from app.ingestion.adapters.db_export_adapter import read_db_export
+
+        return read_db_export(blob, fmt)
 
     raise ValueError(f"Unsupported format: {fmt}")
 

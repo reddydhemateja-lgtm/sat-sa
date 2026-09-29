@@ -10,6 +10,7 @@ from app.routers import (
     admin,
     analytics,
     auth,
+    connectors,
     datasets,
     health,
     ingestion,
@@ -58,6 +59,7 @@ app.include_router(reviews.router, prefix=API_PREFIX)
 app.include_router(lists.router, prefix=API_PREFIX)
 app.include_router(reports.router, prefix=API_PREFIX)
 app.include_router(datasets.router, prefix=API_PREFIX)
+app.include_router(connectors.router, prefix=API_PREFIX)
 app.include_router(admin.router, prefix=API_PREFIX)
 
 

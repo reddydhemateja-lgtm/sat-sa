@@ -23,6 +23,7 @@ class DataSubmission(Base, TimestampMixin):
     file_size: Mapped[int] = mapped_column(Integer, default=0)
     format: Mapped[str] = mapped_column(String(16))
     payload_type: Mapped[str] = mapped_column(String(32), index=True)
+    version: Mapped[int] = mapped_column(Integer, default=1)
     status: Mapped[str] = mapped_column(String(24), default="PENDING")
     records_received: Mapped[int] = mapped_column(Integer, default=0)
     records_valid: Mapped[int] = mapped_column(Integer, default=0)

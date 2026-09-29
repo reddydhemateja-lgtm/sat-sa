@@ -23,6 +23,8 @@ from app.models.analytics import (
 from app.models.review import ReviewDecision, ReviewDecisionEnum
 from app.models.reporting import AnalyticsConfig, Report
 from app.models.preferences import DatasetPreference
+from app.models.connectors import APIConnector
+
 __all__ = [
     "TimestampMixin",
     "RoleEnum",
@@ -49,4 +51,5 @@ __all__ = [
     "ReviewDecisionEnum",
     "Report",
     "AnalyticsConfig",
+    "APIConnector",
 ]
